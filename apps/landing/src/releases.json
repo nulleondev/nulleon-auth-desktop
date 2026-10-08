@@ -2,6 +2,9 @@
   "version": "0.2.7",
   "repository": "https://github.com/nulleondev/nulleon-auth-desktop",
   "releaseUrl": "https://github.com/nulleondev/nulleon-auth-desktop/releases/tag/v0.2.7",
-  "available": false,
-  "assets": {}
+  "available": true,
+  "assets": {
+    "linux": "https://github.com/nulleondev/nulleon-auth-desktop/releases/download/v0.2.7/NulleonAuth-0.2.7-linux-x86_64.AppImage",
+    "windows": "https://github.com/nulleondev/nulleon-auth-desktop/releases/download/v0.2.7/NulleonAuth-0.2.7-windows-x64.exe"
+  }
 }
