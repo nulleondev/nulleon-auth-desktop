@@ -4,11 +4,11 @@ Um cofre local para códigos TOTP e notas privadas, com aplicativo desktop e sit
 
 ## Downloads
 
-Os instaladores ficam em [Releases](https://github.com/nulleondev/nulleon-auth-desktop/releases). A edição 0.2.7 é um pré-lançamento sem certificado de desenvolvedor: o Windows pode exibir o SmartScreen e o macOS pode exigir autorização explícita em Privacidade e Segurança. Os pacotes macOS têm assinatura ad hoc, sem notarização Apple.
+Os instaladores ficam em [Releases](https://github.com/nulleondev/nulleon-auth-desktop/releases). A edição 0.2.7 é um pré-lançamento sem certificado de desenvolvedor: o Windows pode exibir o SmartScreen. O macOS está em breve, aguardando certificado e notarização.
 
-- Linux x86_64: AppImage. Dê permissão de execução e abra o arquivo. Em sistemas sem FUSE, use `--appimage-extract-and-run`.
+- Linux x86_64 (Ubuntu 24.04 ou equivalente mais recente): AppImage. Dê permissão de execução e abra o arquivo. Em sistemas sem FUSE, use `--appimage-extract-and-run`.
 - Windows x64: instalador NSIS. Usa Microsoft Edge WebView2.
-- macOS: DMG separado para Apple Silicon e Intel. Arraste o aplicativo para Aplicativos.
+- macOS: em breve. Nenhum download público habilitado nesta versão.
 
 Confira os arquivos SHA256SUMS antes de instalar. Builds automatizadas e teste de abertura não substituem validação em todos os modelos de computador.
 
@@ -32,7 +32,7 @@ Leia códigos na tela ou importe PNG, JPEG e WebP. TOTP suporta SHA-1, SHA-256 e
 
 ## Desenvolvimento
 
-Requisitos: Node.js 22, Rust stable e as [dependências Tauri](https://tauri.app/start/prerequisites/) do seu sistema. Linux também usa os pacotes de desenvolvimento PipeWire, D-Bus e Clang.
+Requisitos: Node.js 22, Rust stable e as [dependências Tauri](https://tauri.app/start/prerequisites/) do seu sistema. A compilação Linux usa Ubuntu 24.04 ou equivalente, com os pacotes de desenvolvimento PipeWire, D-Bus e Clang.
 
 ```sh
 npm ci --ignore-scripts

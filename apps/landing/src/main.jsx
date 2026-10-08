@@ -459,17 +459,14 @@ function App() {
                 <div className="download-bottom">
                   <span className="release-state">
                     <i />
-                    {release.available ? `v${release.version} · pré-lançamento` : "Verificando instaladores"}
+                    {os.icon === "mac" ? "Em breve · assinatura pendente" : release.available ? `v${release.version} · pré-lançamento` : "Verificando instaladores"}
                   </span>
-                  {release.available ? (os.icon === "mac" ? <>
-                    <a className="button" href={release.assets.macosArm64}>Apple Silicon <Download size={16} /></a>
-                    <a className="text-link" href={release.assets.macosX64}>Baixar para Intel <ArrowUpRight size={15} /></a>
-                  </> : <a className="button" href={os.icon === "linux" ? release.assets.linux : release.assets.windows}>Baixar {os.name} <Download size={16} /></a>) : <button className="button download-pending" disabled>Em verificação <Download size={16} /></button>}
+                  {os.icon === "mac" ? <button className="button download-pending" disabled>Em breve <Download size={16} /></button> : release.available ? <a className="button" href={os.icon === "linux" ? release.assets.linux : release.assets.windows}>Baixar {os.name} <Download size={16} /></a> : <button className="button download-pending" disabled>Em verificação <Download size={16} /></button>}
                 </div>
               </article>
             ))}
           </div>
-          <p className="demo-footnote">Pré-lançamento sem certificado de desenvolvedor. Windows e macOS podem solicitar autorização para abrir. macOS sem notarização. <a href={release.available ? release.releaseUrl : REPO} target="_blank" rel="noreferrer">Instruções e verificações SHA-256</a>.</p>
+          <p className="demo-footnote">Pré-lançamento. O Windows pode exibir um aviso de desenvolvedor não verificado. macOS em breve, após assinatura e notarização. <a href={release.available ? release.releaseUrl : REPO} target="_blank" rel="noreferrer">Instruções e verificações SHA-256</a>.</p>
           <div className="repo-panel">
             <div>
               <Github size={28} />
@@ -507,7 +504,7 @@ function App() {
               },
               {
                 q: "Já posso baixar para o meu sistema?",
-                a: release.available ? "Sim. Escolha o instalador do seu sistema acima. Para macOS, escolha Apple Silicon ou Intel. Esta é uma versão de pré-lançamento sem certificado de desenvolvedor; consulte as instruções da release e verifique o SHA-256." : "Os instaladores estão em verificação. Os links serão ativados quando os arquivos estiverem publicados e acessíveis.",
+                a: release.available ? "Linux e Windows estão disponíveis acima. O macOS está em breve, aguardando assinatura e notarização. Esta é uma versão de pré-lançamento; consulte as instruções da release e verifique o SHA-256." : "Os instaladores estão em verificação. Os links serão ativados quando os arquivos estiverem publicados e acessíveis.",
               },
             ].map((item, i) => (
               <details key={item.q}>

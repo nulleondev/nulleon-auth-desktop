@@ -10,6 +10,8 @@ Não coloque dados privados em `public/`, no repositório, em screenshots de tes
 
 A validação cobre vetores RFC 6238, parser e imagens QR adversariais, captura X11 isolada, senha incorreta, adulteração de ciphertext e nonce, limites de arquivo, escrita atômica, backup e permissões Unix. A interface é testada com dados sintéticos, incluindo bloqueio por inatividade, clipboard, cancelamento de operações e confirmação da recuperação.
 
-Consulte os logs da execução de build para resultados por plataforma. Permissão de captura em macOS, múltiplos monitores físicos, configurações específicas de GPU e instalação em máquinas de usuários exigem teste adicional. Os instaladores de pré-lançamento não possuem assinatura de desenvolvedor nem notarização.
+Consulte os logs da execução de build para resultados por plataforma. Permissão de captura em macOS, múltiplos monitores físicos, configurações específicas de GPU e instalação em máquinas de usuários exigem teste adicional. O instalador Windows de pré-lançamento não possui assinatura de desenvolvedor. macOS não é distribuído nesta versão, aguardando assinatura e notarização.
 
 Uma auditoria tem escopo e data; ela não certifica ausência de vulnerabilidades.
+
+Dependências transitivas ainda sinalizadas pelo RustSec: glib 0.18.5 (RUSTSEC-2024-0429, unsound) e proc-macro-error 1.0.4 (RUSTSEC-2024-0370, não mantida). Esses avisos não foram considerados resolvidos pela atualização das demais bibliotecas.
