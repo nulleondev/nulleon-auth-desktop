@@ -429,7 +429,7 @@ function App() {
             {[
               {
                 name: "Linux",
-                format: "APPIMAGE / X86_64",
+                format: "APPIMAGE / X86_64 · UBUNTU 24.04+",
                 icon: "linux",
                 label: "01",
               },
@@ -504,7 +504,7 @@ function App() {
               },
               {
                 q: "Já posso baixar para o meu sistema?",
-                a: release.available ? "Linux e Windows estão disponíveis acima. O macOS está em breve, aguardando assinatura e notarização. Esta é uma versão de pré-lançamento; consulte as instruções da release e verifique o SHA-256." : "Os instaladores estão em verificação. Os links serão ativados quando os arquivos estiverem publicados e acessíveis.",
+                a: release.available ? "Linux e Windows estão disponíveis acima. O macOS está em breve, aguardando assinatura e notarização. Esta é uma versão de pré-lançamento; consulte as instruções da release e verifique o SHA-256." : "Linux e Windows estão em verificação. O macOS está em breve, aguardando assinatura e notarização. Os links serão ativados quando os arquivos estiverem publicados e acessíveis.",
               },
             ].map((item, i) => (
               <details key={item.q}>
