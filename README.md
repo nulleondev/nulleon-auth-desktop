@@ -1,6 +1,40 @@
 # Nulleon Auth
 
-Um cofre local para códigos TOTP e notas privadas, com aplicativo desktop e site de apresentação.
+<p align="center">
+  <img src="docs/assets/simbolo-nulleon-auth.svg" alt="Nulleon Auth" width="96">
+</p>
+
+<p align="center"><strong>Seu cofre local para códigos TOTP e notas privadas.</strong><br>Desktop para Linux e Windows, com dados sob seu controle.</p>
+
+<p align="center">
+  <a href="https://nulleonauth.tech/">Site</a> ·
+  <a href="https://github.com/nulleondev/nulleon-auth-desktop/releases">Downloads</a> ·
+  <a href="https://www.instagram.com/dev.nulleon/">Instagram</a>
+</p>
+
+![Nulleon Auth — cofre local](docs/assets/interface-cofre.png)
+
+As imagens desta página usam dados sintéticos e servem para apresentar a interface. O aplicativo mantém o arquivo do cofre no dispositivo; o site não recebe uma cópia.
+
+## O que você encontra
+
+- Códigos TOTP com suporte a SHA-1, SHA-256 e SHA-512, 6 ou 8 dígitos e período configurável.
+- Notas privadas no mesmo cofre local criptografado.
+- Bloqueio automático após três minutos de inatividade e recolhimento do conteúdo ao trocar de janela.
+- Leitura de QR pela tela ou por imagens PNG, JPEG e WebP.
+- Interface pensada para uso offline, sem conta obrigatória e sem sincronização oculta.
+
+## Interface
+
+<p align="center">
+  <img src="docs/assets/interface-totp.png" alt="Códigos TOTP no Nulleon Auth" width="48%">
+  <img src="docs/assets/interface-nota.png" alt="Nota privada no Nulleon Auth" width="48%">
+</p>
+
+<p align="center">
+  <img src="docs/assets/interface-qr.png" alt="Leitura de QR no Nulleon Auth" width="48%">
+  <img src="docs/assets/portal.webp" alt="Identidade visual Nulleon Auth" width="48%">
+</p>
 
 ## Downloads
 

@@ -32,6 +32,7 @@ import useCinematicMotion from "./useCinematicMotion";
 import "./style.css";
 import release from "./releases.json";
 const REPO = release.repository;
+const SITE_URL = "https://nulleonauth.tech/";
 const chapters = [
   {
     label: "01 / GUARDAR",
@@ -550,6 +551,9 @@ function App() {
             </a>
             <a href={REPO} target="_blank" rel="noreferrer">
               GitHub ↗
+            </a>
+            <a href={SITE_URL} target="_blank" rel="noreferrer">
+              Site ↗
             </a>
           </nav>
         </div>
