@@ -10,7 +10,7 @@ Não coloque dados privados em `public/`, no repositório, em screenshots de tes
 
 A validação cobre vetores RFC 6238, parser e imagens QR adversariais, captura X11 isolada, senha incorreta, adulteração de ciphertext e nonce, limites de arquivo, escrita atômica, backup e permissões Unix. A interface é testada com dados sintéticos, incluindo bloqueio por inatividade, clipboard, cancelamento de operações e confirmação da recuperação.
 
-Na [execução de distribuição 0.2.7](https://github.com/nulleondev/nulleon-auth-desktop/actions/runs/37799786355), Linux e Windows passaram pelos testes nativos e abertura. O instalador Windows passou por instalação silenciosa e abertura do executável instalado. O AppImage do runner também foi aberto e inspecionado visualmente em um perfil Linux descartável. Downloads públicos anônimos tiveram seus SHA-256 conferidos. Permissão de captura em macOS, múltiplos monitores físicos, configurações específicas de GPU e instalação em máquinas de usuários exigem teste adicional. O instalador Windows de pré-lançamento não possui assinatura de desenvolvedor. macOS não é distribuído nesta versão, aguardando assinatura e notarização.
+Na execução de distribuição 0.2.8, Linux e Windows serão novamente submetidos aos testes nativos e de abertura. O instalador Windows continuará sem assinatura de desenvolvedor, e o macOS permanecerá em breve até a assinatura e notarização.
 
 Uma auditoria tem escopo e data; ela não certifica ausência de vulnerabilidades.
 

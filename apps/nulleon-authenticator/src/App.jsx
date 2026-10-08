@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import {
   AlertCircle,
@@ -17,6 +18,8 @@ import {
   KeyRound,
   Loader,
   Lock,
+  Maximize2,
+  Minimize2,
   Plus,
   Scan,
   ShieldCheck,
@@ -74,6 +77,7 @@ function App() {
   const [scanningScreen, setScanningScreen] = useState(false);
   const [appFocused, setAppFocused] = useState(true);
   const [privacyMode, setPrivacyMode] = useState(true);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   const screenRef = useRef(screen);
   const idleTimeout = useRef(null);
@@ -86,6 +90,46 @@ function App() {
   const savePending = useRef(false);
   const [saving, setSaving] = useState(false);
   const qrFileInput = useRef(null);
+  const tauriWindow = useRef(null);
+
+  useEffect(() => {
+    if (!window.__TAURI_INTERNALS__) return undefined;
+
+    let unlistenResize;
+    const setupWindowControls = async () => {
+      const appWindow = getCurrentWindow();
+      tauriWindow.current = appWindow;
+      try {
+        setIsMaximized(await appWindow.isMaximized());
+        unlistenResize = await appWindow.onResized(async () => {
+          setIsMaximized(await appWindow.isMaximized());
+        });
+      } catch {
+        // Window controls stay available when the host does not expose state.
+      }
+    };
+    void setupWindowControls();
+    return () => {
+      unlistenResize?.();
+      tauriWindow.current = null;
+    };
+  }, []);
+
+  const runWindowCommand = (command) => {
+    const appWindow = tauriWindow.current;
+    if (!appWindow) return;
+    void command(appWindow).catch(() => {
+      showToast("O controle da janela não está disponível", "error");
+    });
+  };
+
+  const minimizeWindow = () => runWindowCommand((appWindow) => appWindow.minimize());
+  const toggleMaximizeWindow = () =>
+    runWindowCommand(async (appWindow) => {
+      await appWindow.toggleMaximize();
+      setIsMaximized(await appWindow.isMaximized());
+    });
+  const closeWindow = () => runWindowCommand((appWindow) => appWindow.close());
 
   useEffect(() => {
     // Closing/cancelling a form invalidates asynchronous QR results and clears drafts.
@@ -486,6 +530,12 @@ function App() {
           </div>
         )}
         <header className="header-bar">
+          <span
+            className="titlebar-drag"
+            data-tauri-drag-region
+            onDoubleClick={toggleMaximizeWindow}
+            aria-hidden="true"
+          />
           <div className="brand">
             <div className="brand-mark">
               <OrbitMark size={31} />
@@ -520,6 +570,35 @@ function App() {
               <Lock size={18} aria-hidden="true" />
             </button>
           )}
+          <div className="window-controls" aria-label="Controles da janela">
+            <button
+              className="window-control"
+              type="button"
+              onClick={minimizeWindow}
+              aria-label="Minimizar janela"
+              title="Minimizar"
+            >
+              <Minimize2 size={14} aria-hidden="true" />
+            </button>
+            <button
+              className="window-control"
+              type="button"
+              onClick={toggleMaximizeWindow}
+              aria-label={isMaximized ? "Restaurar janela" : "Maximizar janela"}
+              title={isMaximized ? "Restaurar" : "Maximizar"}
+            >
+              <Maximize2 size={14} aria-hidden="true" />
+            </button>
+            <button
+              className="window-control window-control-close"
+              type="button"
+              onClick={closeWindow}
+              aria-label="Fechar janela"
+              title="Fechar"
+            >
+              <X size={15} aria-hidden="true" />
+            </button>
+          </div>
         </header>
 
         <div

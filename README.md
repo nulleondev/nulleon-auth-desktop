@@ -38,7 +38,7 @@ As imagens desta página usam dados sintéticos e servem para apresentar a inter
 
 ## Downloads
 
-Os instaladores ficam em [Releases](https://github.com/nulleondev/nulleon-auth-desktop/releases). A edição 0.2.7 é um pré-lançamento sem certificado de desenvolvedor: o Windows pode exibir o SmartScreen. O macOS está em breve, aguardando certificado e notarização.
+Os instaladores ficam em [Releases](https://github.com/nulleondev/nulleon-auth-desktop/releases). A edição 0.2.8 é um pré-lançamento sem certificado de desenvolvedor: o Windows pode exibir o SmartScreen. O macOS está em breve, aguardando certificado e notarização.
 
 - Linux x86_64 (Ubuntu 24.04 ou equivalente mais recente): AppImage. Dê permissão de execução e abra o arquivo. Em sistemas sem FUSE, use `--appimage-extract-and-run`.
 - Windows x64: instalador NSIS. Usa Microsoft Edge WebView2.

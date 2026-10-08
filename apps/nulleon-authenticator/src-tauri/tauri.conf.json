@@ -1,6 +1,6 @@
 {
   "productName": "nulleon-authenticator",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "identifier": "com.nulleon.authenticator",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -12,6 +12,8 @@
     "windows": [
       {
         "title": "Nulleon Authenticator",
+        "decorations": false,
+        "shadow": true,
         "width": 1040,
         "height": 780,
         "minWidth": 360,
