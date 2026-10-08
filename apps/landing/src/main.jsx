@@ -423,7 +423,7 @@ function App() {
             </h2>
             <p>
               A mesma identidade. O seu ambiente.
-              <br />{release.available ? `Versão ${release.version} · pré-lançamento.` : "Instaladores em verificação."}
+              <br />{release.available ? `Versão ${release.version} · disponível.` : "Instaladores em verificação."}
             </p>
           </div>
           <div className="download-grid">
@@ -460,14 +460,14 @@ function App() {
                 <div className="download-bottom">
                   <span className="release-state">
                     <i />
-                    {os.icon === "mac" ? "Em breve · assinatura pendente" : release.available ? `v${release.version} · pré-lançamento` : "Verificando instaladores"}
+                    {os.icon === "mac" ? "Em breve · assinatura pendente" : release.available ? `v${release.version} · disponível` : "Verificando instaladores"}
                   </span>
                   {os.icon === "mac" ? <button className="button download-pending" disabled>Em breve <Download size={16} /></button> : release.available ? <a className="button" href={os.icon === "linux" ? release.assets.linux : release.assets.windows}>Baixar {os.name} <Download size={16} /></a> : <button className="button download-pending" disabled>Em verificação <Download size={16} /></button>}
                 </div>
               </article>
             ))}
           </div>
-          <p className="demo-footnote">Pré-lançamento. O Windows pode exibir um aviso de desenvolvedor não verificado. macOS em breve, após assinatura e notarização. <a href={release.available ? release.releaseUrl : REPO} target="_blank" rel="noreferrer">Instruções e verificações SHA-256</a>.</p>
+          <p className="demo-footnote">Linux e Windows disponíveis. O Windows pode exibir um aviso de desenvolvedor não verificado. macOS em breve, após assinatura e notarização. <a href={release.available ? release.releaseUrl : REPO} target="_blank" rel="noreferrer">Instruções e verificações SHA-256</a>.</p>
           <div className="repo-panel">
             <div>
               <Github size={28} />
@@ -505,7 +505,7 @@ function App() {
               },
               {
                 q: "Já posso baixar para o meu sistema?",
-                a: release.available ? "Linux e Windows estão disponíveis acima. O macOS está em breve, aguardando assinatura e notarização. Esta é uma versão de pré-lançamento; consulte as instruções da release e verifique o SHA-256." : "Linux e Windows estão em verificação. O macOS está em breve, aguardando assinatura e notarização. Os links serão ativados quando os arquivos estiverem publicados e acessíveis.",
+                a: release.available ? "Linux e Windows estão disponíveis acima. O macOS está em breve, aguardando assinatura e notarização. Consulte as instruções da release e verifique o SHA-256." : "Linux e Windows estão em verificação. O macOS está em breve, aguardando assinatura e notarização. Os links serão ativados quando os arquivos estiverem publicados e acessíveis.",
               },
             ].map((item, i) => (
               <details key={item.q}>
