@@ -1,0 +1,39 @@
+{
+  "productName": "nulleon-authenticator",
+  "version": "0.2.7",
+  "identifier": "com.nulleon.authenticator",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Nulleon Authenticator",
+        "width": 1040,
+        "height": 780,
+        "minWidth": 360,
+        "minHeight": 520,
+        "center": true,
+        "contentProtected": true,
+        "devtools": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; base-uri 'none'; connect-src ipc: http://ipc.localhost; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' asset: http://asset.localhost data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

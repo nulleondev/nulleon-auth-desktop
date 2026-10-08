@@ -1,0 +1,13 @@
+{
+  "name": "nulleon-auth-desktop",
+  "version": "0.2.7",
+  "private": true,
+  "workspaces": [
+    "apps/nulleon-authenticator",
+    "apps/landing"
+  ],
+  "scripts": {
+    "test": "npm run test -w nulleon-authenticator",
+    "build": "npm run build -w nulleon-authenticator && npm run build -w nulleon-auth-landing"
+  }
+}

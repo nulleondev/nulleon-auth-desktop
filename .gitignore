@@ -1,0 +1,62 @@
+# Dependencies and generated output
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+**/target/
+coverage/
+*.tsbuildinfo
+
+# Secrets and private runtime state
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.nauth
+*.nauth.*
+infra/data/
+.safety-backups/
+
+# Logs, caches, and local tooling
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.cache/
+.vite/
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+
+# Packaged binaries are release artifacts, never source control inputs
+*.AppImage
+test_write
+
+# Private exports, signing material, and personal captures
+private/
+backups/
+exports/
+captures/
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+*.sqlite
+*.sqlite3
+*.db
+*.db-wal
+*.db-shm
+credentials.json
+service-account*.json
+vault*.json
+2fa-export*.json
+notes-export*.json
+authenticator-export*.json
+__pycache__/
+*.py[cod]

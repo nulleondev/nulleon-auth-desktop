@@ -1,0 +1,71 @@
+name: Desktop packages
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  package:
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            bundles: appimage
+            asset: linux-x86_64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundles: nsis
+            asset: windows-x64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            bundles: dmg
+            asset: macos-arm64
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            bundles: dmg
+            asset: macos-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@89b12181fb390509a0842a86cc55eeb8eb928c1d
+        with:
+          targets: ${{ matrix.target }}
+      - name: Linux libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libxdo-dev libxcb1-dev libxrandr-dev libdbus-1-dev libpipewire-0.3-dev libclang-dev xvfb
+      - run: python scripts/check-private-files.py
+      - run: npm ci --ignore-scripts
+      - run: npm audit --omit=dev --audit-level=low
+      - run: npm run test -w nulleon-authenticator
+      - name: Native cryptography, storage and QR tests
+        run: cargo test --locked --manifest-path apps/nulleon-authenticator/src-tauri/Cargo.toml --lib -- --test-threads=1
+      - name: Package
+        env:
+          APPLE_SIGNING_IDENTITY: '-'
+        run: npm run tauri -w nulleon-authenticator -- build --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
+      - name: Linux startup smoke
+        if: runner.os == 'Linux'
+        run: xvfb-run -a python3 scripts/smoke-desktop.py apps/nulleon-authenticator/src-tauri/target/${{ matrix.target }}/release/nulleon-authenticator
+      - name: Windows startup smoke
+        if: runner.os == 'Windows'
+        run: python scripts/smoke-desktop.py apps/nulleon-authenticator/src-tauri/target/${{ matrix.target }}/release/nulleon-authenticator.exe
+      - name: macOS startup smoke
+        if: runner.os == 'macOS'
+        run: python3 scripts/smoke-desktop.py apps/nulleon-authenticator/src-tauri/target/${{ matrix.target }}/release/bundle/macos/nulleon-authenticator.app/Contents/MacOS/nulleon-authenticator
+      - name: Collect packages and checksums
+        run: python scripts/collect-desktop.py ${{ matrix.target }} ${{ matrix.asset }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nulleon-auth-${{ matrix.asset }}
+          path: release-files/*
+          if-no-files-found: error
