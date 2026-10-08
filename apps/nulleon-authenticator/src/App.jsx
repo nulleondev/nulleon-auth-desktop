@@ -32,6 +32,7 @@ import coreArt from "../../shared/limiar-core.webp";
 import Atmosphere, { useReducedMotion } from "../../shared/Atmosphere";
 import "./App.css";
 import VaultSetup from "./VaultSetup";
+import VaultRecovery from "./VaultRecovery";
 import { migrateVaultIfNeeded, V2_SCHEMA_VERSION } from "./utils/migration";
 import { generateTOTP } from "./utils/totp";
 import { normalizeSecret, validateSecret } from "./utils/validation";
@@ -109,16 +110,17 @@ function App() {
   };
 
   const clearOwnedClipboard = async () => {
-    if (!lastCopiedValue.current) return;
+    const owned = lastCopiedValue.current;
+    if (!owned) return;
     try {
       const current = await readText();
-      if (current === lastCopiedValue.current) {
+      if (lastCopiedValue.current === owned && current === owned) {
         await writeText("");
       }
     } catch {
       // Another application may replace the text selection with non-text content.
     } finally {
-      lastCopiedValue.current = null;
+      if (lastCopiedValue.current === owned) lastCopiedValue.current = null;
     }
   };
 
@@ -643,6 +645,7 @@ function App() {
 
             {screen === "setup" && <VaultSetup onDone={() => { void init(); }} onCancel={() => setScreen("home")} />}
 
+            {screen === "recovery" && <VaultRecovery vaultFileJson={vaultFileJson} vaultPath={vaultPath} onDone={content => { setVaultFileJson(content); setScreen("unlock"); showToast("Senha atualizada. Desbloqueie com a nova senha."); }} onCancel={() => setScreen("unlock")} />}
             {screen === "unlock" && (
               <div className="center-content onboarding-panel" key={screen}>
                 <div
@@ -716,6 +719,7 @@ function App() {
                   >
                     Voltar
                   </button>
+                  <button className="btn-secondary" type="button" disabled={unlocking} onClick={() => { sessionEpoch.current += 1; setInputPassword(""); setScreen("recovery"); }}>Recuperar com 12 palavras</button>
                 </div>
               </div>
             )}

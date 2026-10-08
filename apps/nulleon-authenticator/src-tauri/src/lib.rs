@@ -115,7 +115,7 @@ fn validate_vault_header(vault: &VaultFile) -> Result<(), String> {
     }
     if BASE64.decode(&vault.salt).map_err(|_| "Invalid salt")?.len() != 16
         || BASE64.decode(&vault.encrypted_seed).map_err(|_| "Invalid encrypted seed")?.len() > 512
-        || vault.ciphertext.len() > 9 * 1024 * 1024 {
+        || vault.ciphertext.len() as u64 > MAX_VAULT_FILE_BYTES {
         return Err("Invalid vault field size".into());
     }
     decode_nonce(&vault.nonce_seed, "seed nonce")?;
@@ -142,6 +142,19 @@ fn set_private_permissions(_path: &Path) -> Result<(), String> {
     Ok(())
 }
 
+// Only one expensive KDF operation at a time across IPC callers.
+static CRYPTO_BUSY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+struct CryptoWork;
+impl CryptoWork {
+    fn begin() -> Result<Self, String> {
+        if CRYPTO_BUSY.swap(true, std::sync::atomic::Ordering::AcqRel) { return Err("Vault operation busy".into()); }
+        Ok(Self)
+    }
+}
+impl Drop for CryptoWork {
+    fn drop(&mut self) { CRYPTO_BUSY.store(false, std::sync::atomic::Ordering::Release); }
+}
+
 // --- COMMANDS ---
 
 #[tauri::command]
@@ -149,6 +162,8 @@ async fn create_new_vault(
     password: String,
     initial_data: String,
 ) -> Result<CreateResponse, String> {
+    let _work = CryptoWork::begin()?;
+    if password.len() > 1024 { return Err("Password is too long".into()); }
     if password.chars().count() < 12 {
         return Err("Master password must contain at least 12 characters".to_string());
     }
@@ -200,6 +215,7 @@ async fn create_new_vault(
 
 #[tauri::command]
 async fn unlock_vault(password: String, vault_file_json: String) -> Result<String, String> {
+    let _work = CryptoWork::begin()?;
     let vault: VaultFile =
         parse_vault(&vault_file_json)?;
     validate_vault_header(&vault)?;
@@ -228,6 +244,8 @@ async fn unlock_vault(password: String, vault_file_json: String) -> Result<Strin
 
 #[tauri::command]
 async fn restore_from_seed(mnemonic: String, vault_file_json: String) -> Result<String, String> {
+    let _work = CryptoWork::begin()?;
+    if mnemonic.len() > 512 { return Err("Mnemonic is too long".into()); }
     let vault: VaultFile =
         parse_vault(&vault_file_json)?;
     validate_vault_header(&vault)?;
@@ -250,6 +268,7 @@ async fn save_existing_vault(
     data: String,
     old_vault_json: String,
 ) -> Result<String, String> {
+    let _work = CryptoWork::begin()?;
     if data.len() as u64 > MAX_VAULT_FILE_BYTES {
         return Err("Vault data is too large".to_string());
     }
@@ -304,6 +323,25 @@ async fn save_existing_vault(
     };
 
     serde_json::to_string(&new_vault_file).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn reset_vault_password(mnemonic: String, new_password: String, vault_file_json: String) -> Result<String, String> {
+    let _work = CryptoWork::begin()?;
+    if mnemonic.len() > 512 || new_password.chars().count() < 12 || new_password.len() > 1024 { return Err("Invalid recovery input".into()); }
+    let mut vault = parse_vault(&vault_file_json)?;
+    let canonical = Mnemonic::parse(&mnemonic).map_err(|_| "Invalid mnemonic")?.to_string();
+    let key = Zeroizing::new(derive_key_from_mnemonic(&canonical)?);
+    let nonce = decode_nonce(&vault.nonce_vault, "vault nonce")?;
+    // Prove possession of the matching recovery key before changing the password wrap.
+    let _plaintext = Zeroizing::new(decrypt_bytes(&key, &BASE64.decode(&vault.ciphertext).map_err(|_| "Invalid ciphertext")?, &nonce)?);
+    let mut salt = [0u8; 16]; OsRng.fill_bytes(&mut salt);
+    let mut nonce_seed = [0u8; 12]; OsRng.fill_bytes(&mut nonce_seed);
+    let password_key = Zeroizing::new(derive_key_from_password(&new_password, &salt)?);
+    vault.encrypted_seed = BASE64.encode(encrypt_bytes(&password_key, canonical.as_bytes(), &nonce_seed)?);
+    vault.salt = BASE64.encode(salt);
+    vault.nonce_seed = BASE64.encode(nonce_seed);
+    serde_json::to_string(&vault).map_err(|_| "Could not encode recovered vault".into())
 }
 
 mod qr;
@@ -455,6 +493,7 @@ pub fn run() {
             create_new_vault,
             unlock_vault,
             restore_from_seed,
+            reset_vault_password,
             save_existing_vault,
             scan_qr_from_screen,
             scan_qr_from_image,
@@ -593,6 +632,19 @@ mod vault_tests {
             }
         });
     }
+    #[test]
+    fn recovery_rewrap_preserves_data_and_original_mnemonic() {
+        tauri::async_runtime::block_on(async {
+            let created = create_new_vault(PASSWORD.into(), DATA.into()).await.unwrap();
+            let recovered = reset_vault_password(created.mnemonic.clone(), "new-public-test-password".into(), created.vault_file.clone()).await.unwrap();
+            assert_eq!(unlock_vault("new-public-test-password".into(), recovered.clone()).await.unwrap(), DATA);
+            assert!(unlock_vault(PASSWORD.into(), recovered.clone()).await.is_err());
+            assert_eq!(restore_from_seed(created.mnemonic, recovered.clone()).await.unwrap(), DATA);
+            let wrong = create_new_vault(PASSWORD.into(), DATA.into()).await.unwrap();
+            assert!(reset_vault_password(wrong.mnemonic, PASSWORD.into(), recovered).await.is_err());
+        });
+    }
+
     #[test]
     fn bounded_hostile_headers_and_passwords() {
         tauri::async_runtime::block_on(async {

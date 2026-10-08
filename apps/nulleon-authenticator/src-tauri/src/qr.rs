@@ -273,8 +273,8 @@ pub(crate) fn decode_bytes(bytes: &[u8]) -> Result<QrScanResult, String> {
     if ![ImageFormat::Png, ImageFormat::Jpeg, ImageFormat::WebP].contains(&format) {
         return Err("QR_IMAGE_INVALID".into());
     }
-    let mut reader = image::io::Reader::with_format(std::io::Cursor::new(bytes), format);
-    let mut limits = image::io::Limits::default();
+    let mut reader = image::ImageReader::with_format(std::io::Cursor::new(bytes), format);
+    let mut limits = image::Limits::default();
     limits.max_image_width = Some(8192);
     limits.max_image_height = Some(8192);
     limits.max_alloc = Some(128 * 1024 * 1024);

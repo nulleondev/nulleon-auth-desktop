@@ -123,8 +123,8 @@ fn rejects_empty_unrelated_and_multiple_codes() {
 fn image_file_import_and_malformed_bytes() {
     let img = image::DynamicImage::ImageLuma8(qr_image(URI, 4));
     for format in [
-        image::ImageOutputFormat::Png,
-        image::ImageOutputFormat::Jpeg(90),
+        image::ImageFormat::Png,
+        image::ImageFormat::Jpeg,
     ] {
         let mut bytes = std::io::Cursor::new(Vec::new());
         img.write_to(&mut bytes, format).unwrap();

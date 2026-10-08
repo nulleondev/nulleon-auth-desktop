@@ -30,7 +30,8 @@ import DemoVault from "./ProductPreview";
 import PlatformIcon from "./PlatformIcon";
 import useCinematicMotion from "./useCinematicMotion";
 import "./style.css";
-const REPO = "https://github.com/nulleondev/nulleon-auth";
+import release from "./releases.json";
+const REPO = release.repository;
 const chapters = [
   {
     label: "01 / GUARDAR",
@@ -421,7 +422,7 @@ function App() {
             </h2>
             <p>
               A mesma identidade. O seu ambiente.
-              <br />A distribuição pública está sendo preparada.
+              <br />{release.available ? `Versão ${release.version} · pré-lançamento.` : "Instaladores em verificação."}
             </p>
           </div>
           <div className="download-grid">
@@ -434,13 +435,13 @@ function App() {
               },
               {
                 name: "Windows",
-                format: "DESKTOP / X64",
+                format: "INSTALADOR / X64",
                 icon: "windows",
                 label: "02",
               },
               {
                 name: "macOS",
-                format: "DESKTOP / MAC",
+                format: "DMG / APPLE SILICON + INTEL",
                 icon: "mac",
                 label: "03",
               },
@@ -458,22 +459,24 @@ function App() {
                 <div className="download-bottom">
                   <span className="release-state">
                     <i />
-                    Aguardando release pública
+                    {release.available ? `v${release.version} · pré-lançamento` : "Verificando instaladores"}
                   </span>
-                  <button className="button download-pending" disabled>
-                    Download em breve <Download size={16} />
-                  </button>
+                  {release.available ? (os.icon === "mac" ? <>
+                    <a className="button" href={release.assets.macosArm64}>Apple Silicon <Download size={16} /></a>
+                    <a className="text-link" href={release.assets.macosX64}>Baixar para Intel <ArrowUpRight size={15} /></a>
+                  </> : <a className="button" href={os.icon === "linux" ? release.assets.linux : release.assets.windows}>Baixar {os.name} <Download size={16} /></a>) : <button className="button download-pending" disabled>Em verificação <Download size={16} /></button>}
                 </div>
               </article>
             ))}
           </div>
+          <p className="demo-footnote">Pré-lançamento sem certificado de desenvolvedor. Windows e macOS podem solicitar autorização para abrir. macOS sem notarização. <a href={release.available ? release.releaseUrl : REPO} target="_blank" rel="noreferrer">Instruções e verificações SHA-256</a>.</p>
           <div className="repo-panel">
             <div>
               <Github size={28} />
               <div>
                 <h3>Acompanhe o que vem a seguir.</h3>
                 <p>
-                  Repositório privado nesta etapa. Acesso mediante autorização.
+                  Código do desktop e site. API administrativa e dados pessoais não fazem parte desta publicação.
                 </p>
               </div>
             </div>
@@ -504,7 +507,7 @@ function App() {
               },
               {
                 q: "Já posso baixar para o meu sistema?",
-                a: "Ainda não há uma release pública verificada. Os links de Linux, Windows e macOS serão ativados quando os respectivos instaladores forem publicados. O repositório está privado nesta etapa.",
+                a: release.available ? "Sim. Escolha o instalador do seu sistema acima. Para macOS, escolha Apple Silicon ou Intel. Esta é uma versão de pré-lançamento sem certificado de desenvolvedor; consulte as instruções da release e verifique o SHA-256." : "Os instaladores estão em verificação. Os links serão ativados quando os arquivos estiverem publicados e acessíveis.",
               },
             ].map((item, i) => (
               <details key={item.q}>
