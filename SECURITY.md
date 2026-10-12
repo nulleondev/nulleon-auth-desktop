@@ -10,7 +10,7 @@ Não coloque dados privados em `public/`, no repositório, em screenshots de tes
 
 A validação cobre vetores RFC 6238, parser e imagens QR adversariais, captura X11 isolada, senha incorreta, adulteração de ciphertext e nonce, limites de arquivo, escrita atômica, backup e permissões Unix. A interface é testada com dados sintéticos, incluindo bloqueio por inatividade, clipboard, cancelamento de operações e confirmação da recuperação.
 
-Na execução de distribuição 0.2.9, Linux e Windows foram submetidos aos testes nativos e de abertura. O instalador Windows continua sem assinatura de desenvolvedor, e o macOS permanece em breve até a assinatura e notarização.
+Na execução de distribuição 0.2.10, Linux e Windows foram submetidos aos testes nativos e de abertura. O instalador Windows continua sem assinatura de desenvolvedor, e o macOS permanece em breve até a assinatura e notarização.
 
 Uma auditoria tem escopo e data; ela não certifica ausência de vulnerabilidades.
 

@@ -93,11 +93,14 @@ function App() {
   const tauriWindow = useRef(null);
 
   useEffect(() => {
-    if (!window.__TAURI_INTERNALS__) return undefined;
-
     let unlistenResize;
     const setupWindowControls = async () => {
-      const appWindow = getCurrentWindow();
+      let appWindow;
+      try {
+        appWindow = getCurrentWindow();
+      } catch {
+        return;
+      }
       tauriWindow.current = appWindow;
       try {
         setIsMaximized(await appWindow.isMaximized());
@@ -116,8 +119,16 @@ function App() {
   }, []);
 
   const runWindowCommand = (command) => {
-    const appWindow = tauriWindow.current;
-    if (!appWindow) return;
+    let appWindow = tauriWindow.current;
+    if (!appWindow) {
+      try {
+        appWindow = getCurrentWindow();
+        tauriWindow.current = appWindow;
+      } catch {
+        showToast("O controle da janela não está disponível", "error");
+        return;
+      }
+    }
     void command(appWindow).catch(() => {
       showToast("O controle da janela não está disponível", "error");
     });
