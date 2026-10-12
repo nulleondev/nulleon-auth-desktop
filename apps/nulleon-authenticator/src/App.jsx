@@ -326,11 +326,20 @@ function App() {
     const epoch = sessionEpoch.current;
     setUnlocking(true);
     setLoadingMsg("Descriptografando localmente…");
+    let plaintext;
     try {
-      const plaintext = await invoke("unlock_vault", {
+      plaintext = await invoke("unlock_vault", {
         password: inputPassword,
         vaultFileJson,
       });
+    } catch {
+      setInputPassword("");
+      showToast("Acesso negado. Verifique a senha mestra.", "error");
+      unlockPending.current = false;
+      setUnlocking(false);
+      return;
+    }
+    try {
       if (epoch !== sessionEpoch.current) return;
       const migrated = migrateVaultIfNeeded(JSON.parse(plaintext));
       setVault(migrated.items);
@@ -343,7 +352,7 @@ function App() {
       resetIdleTimer();
     } catch {
       setInputPassword("");
-      showToast("Acesso negado. Verifique a senha mestra.", "error");
+      showToast("Cofre aberto, mas há itens antigos que precisam de migração.", "error");
     } finally {
       unlockPending.current = false;
       setUnlocking(false);

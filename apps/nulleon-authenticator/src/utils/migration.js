@@ -1,5 +1,18 @@
 export const V2_SCHEMA_VERSION = 2;
 
+function createItemId() {
+    if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+    if (globalThis.crypto?.getRandomValues) {
+        const bytes = new Uint8Array(16);
+        globalThis.crypto.getRandomValues(bytes);
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+    throw new Error('Secure random generator unavailable');
+}
+
 export function migrateVaultIfNeeded(rawData) {
     let items = [];
 
@@ -11,13 +24,13 @@ export function migrateVaultIfNeeded(rawData) {
         throw new Error('Invalid vault container');
     }
     if (items.length > 10000 || (rawData?.vaultVersion !== undefined && rawData.vaultVersion !== 2)) throw new Error('Unsupported vault schema');
-    if (items.some(item => !item || typeof item !== 'object' || Array.isArray(item) || (item.type && !['totp', 'note'].includes(item.type)))) throw new Error('Invalid vault item');
+    if (items.some(item => !item || typeof item !== 'object' || Array.isArray(item))) throw new Error('Invalid vault item');
 
     const migratedItems = items.map(item => {
         const newItem = { ...item };
 
         // Ensure ID
-        if (!newItem.id) newItem.id = window.crypto.randomUUID();
+        if (!newItem.id) newItem.id = createItemId();
 
         // Normalize TOTP secret (key -> secret, token -> secret, otpauth -> secret, code -> secret)
         const secretKeys = ['secret', 'key', 'token', 'otpauth', 'code', 'apikey', 'api_key'];
@@ -52,6 +65,10 @@ export function migrateVaultIfNeeded(rawData) {
             } else {
                 newItem.type = 'note';
             }
+        } else if (!['totp', 'note'].includes(newItem.type)) {
+            // Preserve legacy labels while presenting the item through the current UI.
+            newItem.legacyType = newItem.type;
+            newItem.type = newItem.secret ? 'totp' : 'note';
         }
 
         return newItem;
